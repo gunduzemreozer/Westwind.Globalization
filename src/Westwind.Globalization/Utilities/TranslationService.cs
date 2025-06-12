@@ -1,10 +1,10 @@
 ﻿#region License
 /*
  **************************************************************
- *  Author: Rick Strahl 
+ *  Author: Rick Strahl
  *          © West Wind Technologies, 2009-2015
  *          http://www.west-wind.com/
- * 
+ *
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -14,10 +14,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,7 +26,7 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
- **************************************************************  
+ **************************************************************
 */
 #endregion
 
@@ -39,12 +39,13 @@ using System.Net;
 using System.Xml;
 using Newtonsoft.Json.Linq;
 using Westwind.Globalization.Properties;
+using Newtonsoft.Json;
 
 namespace Westwind.Globalization
 {
     /// <summary>
     /// Provides basic translation features via several Web interfaces
-    /// 
+    ///
     /// NOTE: These services may change their format or otherwise fail.
     /// </summary>
     public class TranslationServices
@@ -83,7 +84,12 @@ namespace Westwind.Globalization
         /// Two letter culture (as for FromCulture)
         /// </param>
         /// <param name="googleApiKey">Google Api key - if not specified it's read from the configuration</param>
-        public string TranslateGoogle(string text, string fromCulture, string toCulture, string googleApiKey = null)
+        public string TranslateGoogle(
+            string text,
+            string fromCulture,
+            string toCulture,
+            string googleApiKey = null
+        )
         {
             fromCulture = fromCulture.ToLower();
             toCulture = toCulture.ToLower();
@@ -96,7 +102,7 @@ namespace Westwind.Globalization
                     return TranslateGoogleApi(text, fromCulture, toCulture, googleApiKey);
             }
 
-            // normalize the culture in case something like en-us was passed 
+            // normalize the culture in case something like en-us was passed
             // retrieve only en since Google doesn't support sub-locales
             string[] tokens = fromCulture.Split('-');
             if (tokens.Length > 1)
@@ -107,10 +113,10 @@ namespace Westwind.Globalization
             if (tokens.Length > 1)
                 toCulture = tokens[0];
 
-            string format = "https://translate.googleapis.com/translate_a/single?client=gtx&sl={1}&tl={2}&dt=t&q={0}";
+            string format =
+                "https://translate.googleapis.com/translate_a/single?client=gtx&sl={1}&tl={2}&dt=t&q={0}";
 
-            string url = string.Format(format,
-                text, fromCulture, toCulture);
+            string url = string.Format(format, text, fromCulture, toCulture);
 
             // Retrieve Translation with HTTP GET call
             string jsonString;
@@ -125,11 +131,9 @@ namespace Westwind.Globalization
             }
             catch (Exception ex)
             {
-                ErrorMessage = Resources.ConnectionFailed + ": " +
-                               ex.GetBaseException().Message;
+                ErrorMessage = Resources.ConnectionFailed + ": " + ex.GetBaseException().Message;
                 return null;
             }
-
 
             // format:
             //[[["Hallo grausame Welt","Hello Cruel world",,,0]],,"en"]
@@ -147,8 +151,6 @@ namespace Westwind.Globalization
             return result;
         }
 
-
-
         /// <summary>
         /// Translates a string into another language using Google's translate API JSON calls.
         /// <seealso>Class TranslationServices</seealso>
@@ -161,16 +163,20 @@ namespace Westwind.Globalization
         /// Two letter culture (as for FromCulture)
         /// </param>
         /// <param name="googleApiKey">Google Api key - if not specified it's read from the configuration</param>
-        public string TranslateGoogleApi(string text, string fromCulture, string toCulture, string googleApiKey = null)
+        public string TranslateGoogleApi(
+            string text,
+            string fromCulture,
+            string toCulture,
+            string googleApiKey = null
+        )
         {
-
             if (string.IsNullOrEmpty(googleApiKey))
                 googleApiKey = DbResourceConfiguration.Current.GoogleApiKey;
 
             fromCulture = fromCulture.ToLower();
             toCulture = toCulture.ToLower();
 
-            // normalize the culture in case something like en-us was passed 
+            // normalize the culture in case something like en-us was passed
             // retrieve only en since Google doesn't support sub-locales
             string[] tokens = fromCulture.Split('-');
             if (tokens.Length > 1)
@@ -181,10 +187,10 @@ namespace Westwind.Globalization
             if (tokens.Length > 1)
                 toCulture = tokens[0];
 
-            string format = "https://www.googleapis.com/language/translate/v2?key={3}&source={1}&target={2}&q={0}";
+            string format =
+                "https://www.googleapis.com/language/translate/v2?key={3}&source={1}&target={2}&q={0}";
 
-            string url = string.Format(format,
-                text, fromCulture, toCulture, googleApiKey);
+            string url = string.Format(format, text, fromCulture, toCulture, googleApiKey);
 
             // Retrieve Translation with HTTP GET call
             string jsonString;
@@ -199,11 +205,9 @@ namespace Westwind.Globalization
             }
             catch (Exception ex)
             {
-                ErrorMessage = Resources.ConnectionFailed + ": " +
-                               ex.GetBaseException().Message;
+                ErrorMessage = Resources.ConnectionFailed + ": " + ex.GetBaseException().Message;
                 return null;
             }
-
 
             // format:
             //{
@@ -236,14 +240,17 @@ namespace Westwind.Globalization
         /// <param name="toCulture"></param>
         /// <param name="authToken"></param>
         /// <returns></returns>
-        public string TranslateDeepL(string text, string fromCulture, string toCulture, string authToken = null)
+        public string TranslateDeepL(
+            string text,
+            string fromCulture,
+            string toCulture,
+            string authToken = null
+        )
         {
-
             // TODO: Unable to test this as I can't get an account - reqiures EU Credit Card. Lame!
 
             if (authToken == null)
                 authToken = DbResourceConfiguration.Current.DeepLApiKey;
-
 
             fromCulture = fromCulture.ToUpper();
             toCulture = toCulture.ToUpper();
@@ -252,11 +259,10 @@ namespace Westwind.Globalization
 
             string url = "https://api.deepl.com/v2/translate?";
             string body =
-                $"auth_key={WebUtility.UrlEncode(authToken)}&" +
-                $"text={WebUtility.UrlEncode(text)}&" +
-                $"target_lang={toCulture}&" +
-                $"source_lang={fromCulture}";
-
+                $"auth_key={WebUtility.UrlEncode(authToken)}&"
+                + $"text={WebUtility.UrlEncode(text)}&"
+                + $"target_lang={toCulture}&"
+                + $"source_lang={fromCulture}";
 
             try
             {
@@ -281,11 +287,11 @@ namespace Westwind.Globalization
 
         /// <summary>
         /// Uses the Bing API service to perform translation
-        /// Bing can translate up to 1000 characters. 
-        /// 
+        /// Bing can translate up to 1000 characters.
+        ///
         /// Requires that you provide a CLientId and ClientSecret
         /// or set the configuration values for these two.
-        /// 
+        ///
         /// More info on setup:
         /// http://weblog.west-wind.com/posts/2013/Jun/06/Setting-up-and-using-Bing-Translate-API-Service-for-Machine-Translation
         /// </summary>
@@ -295,89 +301,51 @@ namespace Westwind.Globalization
         /// <param name="accessToken">Pass an access token retrieved with GetBingAuthToken.
         /// If not passed the default keys from .config file are used if any</param>
         /// <returns></returns>
-        public string TranslateBing(string text, string fromCulture, string toCulture,
-            string accessToken = null)
+        public string TranslateBing(string text, string fromCulture, string toCulture)
         {
+            string region = DbResourceConfiguration.Current.BingRegion ?? "global";
 
-            if (accessToken == null)
+            if (string.IsNullOrWhiteSpace(DbResourceConfiguration.Current.BingClientId))
             {
-                accessToken = GetBingAuthToken();
-                if (accessToken == null)
-                    return null;
-            }
-
-            string serviceUrl = "https://api.microsofttranslator.com/v2/Http.svc/Translate?" +
-                                "&text=" + text +
-                                "&from=" + fromCulture +
-                                "&to=" + toCulture +
-                                "&contentType=text/plain";
-            byte[] res;
-            try
-            {
-                var web = new WebClient();
-                web.Headers.Add("Authorization", "Bearer " + accessToken);
-
-
-                res = web.DownloadData(serviceUrl);
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.GetBaseException().Message;
+                ErrorMessage = "BingClientId (Azure Translator Key) is not configured.";
                 return null;
             }
 
-            // result is a single XML Element fragment
-            var doc = new XmlDocument();
-            doc.Load(new MemoryStream(res));
+            string endpoint =
+                "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0"
+                + $"&from={fromCulture}&to={toCulture}";
 
-            string translatedText = doc.DocumentElement.InnerText;
+            var requestBody = new[] { new { Text = text } };
 
-            return translatedText;
-        }
+            string jsonBody = JsonConvert.SerializeObject(requestBody);
 
-        /// <summary>
-        /// Retrieves an oAuth authentication token to be used on the translate
-        /// API request. The result string needs to be passed as a bearer token
-        /// to the translate API.
-        /// 
-        /// You can find client ID and Secret (or register a new one) at:
-        /// https://datamarket.azure.com/developer/applications/
-        /// </summary>
-        /// <param name="apiKey">The client ID of your application</param>
-        /// <param name="ignored">not used - provided for backwards compat</param>
-        /// <returns></returns>
-        public string GetBingAuthToken(string apiKey = null, string ignored = null)
-        {
-
-            string authBaseUrl = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
-
-            if (string.IsNullOrEmpty(apiKey))
-                apiKey = DbResourceConfiguration.Current.BingClientId;
-
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                ErrorMessage = "Subscription key must be provided";
-                return null;
-            }
-            // POST Auth data to the oauth API
-            string res;
             try
             {
-                var web = new HttpUtilsWebClient(new HttpRequestSettings()
-                {
-                    HttpVerb = "POST"
-                });
-                web.Encoding = Encoding.UTF8;
-                web.Headers.Add("Ocp-Apim-Subscription-Key", apiKey);
-                res = web.UploadString(authBaseUrl, "");
+                var client = new WebClient();
+                client.Headers.Add(
+                    "Ocp-Apim-Subscription-Key",
+                    DbResourceConfiguration.Current.BingClientId
+                );
+                client.Headers.Add("Ocp-Apim-Subscription-Region", region);
+                client.Headers.Add("Content-Type", "application/json");
+
+                var responseBytes = client.UploadData(
+                    endpoint,
+                    "POST",
+                    Encoding.UTF8.GetBytes(jsonBody)
+                );
+                var json = Encoding.UTF8.GetString(responseBytes);
+
+                var result = JArray.Parse(json);
+                var translatedText = result[0]["translations"][0]["text"]?.ToString();
+
+                return translatedText;
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.GetBaseException().Message;
                 return null;
             }
-            return res;
         }
-
     }
 }

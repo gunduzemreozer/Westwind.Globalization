@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;netcoreapp2.1;</TargetFrameworks>
-    <Version>3.1.2</Version>
+    <Version>3.1.2.2</Version>
     <Authors>Rick Strahl</Authors>
     <Company>West Wind Technologies</Company>
     <Product>Westwind.Globalization</Product>
@@ -12,7 +12,7 @@
 Provides ASP.NET Core specific features to the Westwind.Globalization library, including IStringLocalizer interfaces, JavaScript Resource handler and an on-line Resource editor to allow real-time editing of data resources.  
 
  Note: In order to use the Localization Administration feature, please download the required project resources from: https://github.com/RickStrahl/Westwind.Globalization/blob/master/DownloadableAssets/LocalizationAdministrationHtml_AspNetCore.zip
-</Description>
+    </Description>
     <Summary>Database driven localization ASP.NET and ASP.NET Core. Includes a localization Administration Interface.</Summary>
     <Copyright>West Wind Technologies, 2010-2020</Copyright>
     <RepositoryUrl>https://github.com/RickStrahl/Westwind.Globalization</RepositoryUrl>
@@ -52,7 +52,7 @@ Provides ASP.NET Core specific features to the Westwind.Globalization library, i
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="readme.txt" Pack="true" PackagePath="." />
     <None Include="icon.png" Pack="true" PackagePath="." />
@@ -61,5 +61,5 @@ Provides ASP.NET Core specific features to the Westwind.Globalization library, i
   <ItemGroup>
     <ProjectReference Include="..\..\Westwind.Globalization\Westwind.Globalization.csproj" />
   </ItemGroup>
-  
+
 </Project>

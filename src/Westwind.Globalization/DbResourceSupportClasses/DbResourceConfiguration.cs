@@ -71,7 +71,7 @@ namespace Westwind.Globalization
         /// Default uses .NET configuration files.
         /// </summary>
 #if NETFULL
-        public static ConfigurationModes ConfigurationMode  = ConfigurationModes.ConfigFile;
+        public static ConfigurationModes ConfigurationMode = ConfigurationModes.ConfigFile;
 #else
         public static ConfigurationModes ConfigurationMode = ConfigurationModes.JsonFile;
 #endif
@@ -96,7 +96,8 @@ namespace Westwind.Globalization
         /// <seealso>Class DbResource
         /// Compiling Your Applications with the Provider</seealso>
         /// </summary>
-        public string ConnectionString { get; set; } = "*** ENTER A CONNECTION STRING OR connectionStrings ENTRY HERE ***";
+        public string ConnectionString { get; set; } =
+            "*** ENTER A CONNECTION STRING OR connectionStrings ENTRY HERE ***";
 
         /// <summary>
         /// Determines which database provider is used. internally sets the DbResourceDataManagerType
@@ -128,7 +129,6 @@ namespace Westwind.Globalization
         /// </summary>
         public string ResourceTableName { get; set; } = "Localizations";
 
-
         /// <summary>
         /// Name of a LocalizationConfiguration entry that is loaded from the database
         /// if available. Defaults to null - if set reads these configuration settings
@@ -149,18 +149,16 @@ namespace Westwind.Globalization
         /// </summary>
         public string StronglyTypedGlobalResource { get; set; } = "~/Properties/Resources.cs";
 
-
         /// <summary>
         /// The namespace used for exporting and importing resources
         /// </summary>
         public string ResourceBaseNamespace { get; set; } = "AppResources";
 
-
         /// <summary>
         /// Determines how what type of project we are working with
         /// </summary>
-        public GlobalizationResxExportProjectTypes ResxExportProjectType { get; set; } = GlobalizationResxExportProjectTypes.Project;
-
+        public GlobalizationResxExportProjectTypes ResxExportProjectType { get; set; } =
+            GlobalizationResxExportProjectTypes.Project;
 
         /// <summary>
         /// The base physical path used to read and write RESX resources for resource imports
@@ -176,7 +174,15 @@ namespace Westwind.Globalization
         /// </summary>
         public string StringLocalizerResourcePath
         {
-            get { return StringUtils.ExtractString(ResxBaseFolder, "/", "/", allowMissingEndDelimiter: true); }
+            get
+            {
+                return StringUtils.ExtractString(
+                    ResxBaseFolder,
+                    "/",
+                    "/",
+                    allowMissingEndDelimiter: true
+                );
+            }
         }
 
         /// <summary>
@@ -187,7 +193,6 @@ namespace Westwind.Globalization
         /// </summary>
         public bool AddMissingResources { get; set; } = false;
 
-
         /// <summary>
         /// Default mechanism used to access resources in DbRes.T().
         /// This setting is global and used by all resources running through
@@ -196,9 +201,8 @@ namespace Westwind.Globalization
         /// This doesn't not affect Generated REsources which have their own
         /// ResourceAccesssMode override that can be explicitly overridden.
         /// </summary>
-        public ResourceAccessMode ResourceAccessMode { get; set; } = ResourceAccessMode.DbResourceManager;
-
-
+        public ResourceAccessMode ResourceAccessMode { get; set; } =
+            ResourceAccessMode.DbResourceManager;
 
         /// <summary>
         /// Determines the location of the Localization form in a Web relative path.
@@ -207,7 +211,6 @@ namespace Westwind.Globalization
         /// </summary>
         public string LocalizationFormWebPath { get; set; } = "~/LocalizationAdmin/";
 
-
         /// <summary>
         /// API key for Bing Translate API in the
         /// Administration API.
@@ -215,21 +218,22 @@ namespace Westwind.Globalization
         /// </summary>
         public string BingClientId { get; set; }
 
+        public string BingRegion { get; set; }
+
         /// <summary>
         /// Google Translate API Key used to access Translate API.
         /// Note this is a for pay API!
         /// </summary>
         public string GoogleApiKey { get; set; }
 
-
         /// <summary>
         /// DeepL APi key for translations
         /// </summary>
         public string DeepLApiKey { get; set; }
 
-
         [JsonIgnore]
-        public List<IResourceSetValueConverter> ResourceSetValueConverters = new List<IResourceSetValueConverter>();
+        public List<IResourceSetValueConverter> ResourceSetValueConverters =
+            new List<IResourceSetValueConverter>();
 
         /// <summary>
         /// Allows you to override the data provider used to access resources.
@@ -269,7 +273,10 @@ namespace Westwind.Globalization
         /// Override this method to create the custom default provider. Here we allow for different
         /// configuration providers so we don't have to rely on .NET configuration classed (for vNext)
         /// </summary>
-        protected override IConfigurationProvider OnCreateDefaultProvider(string sectionName, object configData)
+        protected override IConfigurationProvider OnCreateDefaultProvider(
+            string sectionName,
+            object configData
+        )
         {
             if (string.IsNullOrEmpty(sectionName))
                 sectionName = "DbResourceConfiguration";
@@ -280,16 +287,20 @@ namespace Westwind.Globalization
             {
                 provider = new JsonFileConfigurationProvider<DbResourceConfiguration>()
                 {
-                    JsonConfigurationFile =
-                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbResourceConfiguration.json")
+                    JsonConfigurationFile = Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "DbResourceConfiguration.json"
+                    )
                 };
             }
             else if (ConfigurationMode == ConfigurationModes.XmlFile)
             {
                 provider = new XmlFileConfigurationProvider<DbResourceConfiguration>()
                 {
-                    XmlConfigurationFile =
-                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbResourceConfiguration.xml")
+                    XmlConfigurationFile = Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "DbResourceConfiguration.xml"
+                    )
                 };
             }
 #if NETFULL
@@ -305,8 +316,10 @@ namespace Westwind.Globalization
             {
                 provider = new JsonFileConfigurationProvider<DbResourceConfiguration>()
                 {
-                    JsonConfigurationFile =
-                           Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbResourceConfiguration.json")
+                    JsonConfigurationFile = Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        "DbResourceConfiguration.json"
+                    )
                 };
             }
 #endif
@@ -410,14 +423,15 @@ namespace Westwind.Globalization
         /// <returns></returns>
         public static DbResourceDataManager CreateDbResourceDataManager()
         {
-            return ReflectionUtils.CreateInstanceFromType(Current.DbResourceDataManagerType) as
-                DbResourceDataManager;
+            return ReflectionUtils.CreateInstanceFromType(Current.DbResourceDataManagerType)
+                as DbResourceDataManager;
         }
 
         /// <summary>
         /// Keep track of loaded providers so we can unload them
         /// </summary>
-        public static List<IWestWindResourceProvider> LoadedProviders = new List<IWestWindResourceProvider>();
+        public static List<IWestWindResourceProvider> LoadedProviders =
+            new List<IWestWindResourceProvider>();
 
         /// <summary>
         /// This static method clears all resources from the loaded Resource Providers
@@ -442,8 +456,6 @@ namespace Westwind.Globalization
             // clear any resource managers
             DbRes.ClearResources();
         }
-
-
     }
 
     public enum ConfigurationModes
@@ -471,7 +483,6 @@ namespace Westwind.Globalization
         ///  Resx resources
         /// </summary>
         Project
-
     }
 
     public enum CodeGenerationLanguage
@@ -479,6 +490,4 @@ namespace Westwind.Globalization
         CSharp,
         Vb
     }
-
-
 }
